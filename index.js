@@ -46,7 +46,7 @@ bot.hears(/(.+)/ig, async (ctx) => {
 
   await saveHistory(updatedHistory);
 
-  await ctx.reply(aiResponse);
+  await ctx.reply(aiResponse || 'Mohon coba lagi');
 });
 
 bot.launch();
