@@ -15,7 +15,7 @@ const readHistory = async () => {
 
 const saveHistory = async (history) => {
   await fs.writeFile(historyFile, JSON.stringify(history, null, 2));
-}
+};
 
 const bot = new Client({
   prefix: "!",
@@ -26,7 +26,7 @@ const bot = new Client({
   WAVersion: [2, 3000, 1017531287],
 });
 
-bot.hears(/(.+)/ig, async (ctx) => {
+bot.hears(/(.+)/gi, async (ctx) => {
   if (ctx.msg.key.fromMe) return;
   if (!ctx.msg.content) return;
 
@@ -35,18 +35,23 @@ bot.hears(/(.+)/ig, async (ctx) => {
 
   if (!sender.startsWith("6285136635787")) return;
 
-  const history = await readHistory();
-  const aiResponse = await AI(userMessage, history);
+  // const history = await readHistory();
 
   const updatedHistory = [
-    ...history,
+    // ...history,
     { role: "user", content: userMessage },
-    { role: "assistant", content: aiResponse },
+    // { role: "assistant", content: aiResponse },
   ];
 
-  await saveHistory(updatedHistory);
+  try {
+    const aiResponse = await AI(userMessage, updatedHistory);
+    await ctx.reply(aiResponse);
+  } catch (e) {
+    const aiResponse = await AI(userMessage, updatedHistory);
+    await ctx.reply(aiResponse);
+  }
 
-  await ctx.reply(aiResponse || 'Mohon coba lagi');
+  // await saveHistory(updatedHistory);
 });
 
 bot.launch();

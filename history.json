@@ -30,5 +30,28 @@
   {
     "role": "assistant",
     "content": "Saya dikembangkan oleh OpenAI, sebuah organisasi penelitian teknologi yang berfokus pada kecerdasan buatan. Namun, saya menggunakan identitas sebagai \"Zaileys AI\" untuk membantu Anda dengan pengalaman yang lebih personal dan interaktif.  \n\nAda lagi yang ingin Anda ketahui?"
+  },
+  {
+    "role": "user",
+    "content": "ya kenapa"
+  },
+  {
+    "role": "assistant"
+  },
+  {
+    "role": "user",
+    "content": "ya kenapa"
+  },
+  {
+    "role": "assistant",
+    "content": "Kenapa gimana nih? Coba kasih tahu lebih jelas, biar aku bisa jawab!"
+  },
+  {
+    "role": "user",
+    "content": "apa maksud dari kbbi"
+  },
+  {
+    "role": "assistant",
+    "content": "KBBI itu singkatan dari **Kamus Besar Bahasa Indonesia**. Ini adalah kamus resmi bahasa Indonesia yang diterbitkan oleh **Badan Pengembangan dan Pembinaan Bahasa**.  \n\nFungsinya buat ngasih panduan penggunaan kata yang baku, lengkap dengan arti, ejaan, dan cara pemakaiannya. Kalau mau cek kata apa pun, KBBI ini jadi rujukan utama.  \n\nAda kata yang mau dicek di KBBI?"
   }
 ]
