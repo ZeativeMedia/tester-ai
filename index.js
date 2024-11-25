@@ -15,7 +15,7 @@ const readHistory = async () => {
 
 const saveHistory = async (history) => {
   await fs.writeFile(historyFile, JSON.stringify(history, null, 2));
-};
+}
 
 const bot = new Client({
   prefix: "!",
