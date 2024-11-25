@@ -1,6 +1,8 @@
 import { Client } from "@mengkodingan/ckptw";
 import { AI } from "./ai.js";
 import fs from "fs/promises";
+import https from "https";
+import axios from "axios";
 
 const historyFile = "history.json";
 
@@ -26,6 +28,19 @@ const bot = new Client({
   WAVersion: [2, 3000, 1017531287],
 });
 
+function extractUrlAndContent(input) {
+  try {
+    const urlMatch = input.match(/!\[image\]\((.*?)\)/); // Cari URL gambar
+
+    const url = urlMatch ? urlMatch[1] : null;
+    const content = input?.split(/\n\n/)[1]?.trim();
+
+    return { url, content };
+  } catch (e) {
+    return false;
+  }
+}
+
 bot.hears(/(.+)/gi, async (ctx) => {
   if (ctx.msg.key.fromMe) return;
   if (!ctx.msg.content) return;
@@ -45,10 +60,29 @@ bot.hears(/(.+)/gi, async (ctx) => {
 
   try {
     const aiResponse = await AI(userMessage, updatedHistory);
-    await ctx.reply(aiResponse);
+
+    const media = extractUrlAndContent(aiResponse);
+
+    if (media) {
+      await ctx.reply({
+        image: { url: media.url },
+        caption: media.content,
+      });
+    } else {
+      await ctx.reply(aiResponse);
+    }
   } catch (e) {
     const aiResponse = await AI(userMessage, updatedHistory);
-    await ctx.reply(aiResponse);
+    const media = extractUrlAndContent(aiResponse);
+
+    if (media) {
+      await ctx.reply({
+        image: { url: media.url },
+        caption: media.content,
+      });
+    } else {
+      await ctx.reply(aiResponse);
+    }
   }
 
   // await saveHistory(updatedHistory);
