@@ -85,7 +85,7 @@ bot.hears(/(.+)/gi, async (ctx) => {
     }
   }
 
-  // await saveHistory(updatedHistory);
+  // await saveHistory(updatedHistory)
 });
 
 bot.launch();
