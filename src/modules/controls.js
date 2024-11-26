@@ -1,9 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 
-const historyFile = path.join(process.cwd(), "/store/history.json");
+const historyFile = path.join(process.cwd(), "./store/history.json");
 
 export const initFile = async () => {
+  await fs.mkdir(path.dirname(historyFile), { recursive: true });
   try {
     await fs.access(historyFile);
   } catch {
