@@ -6,7 +6,7 @@ const provider = GPT4js.createProvider("Nextway");
 const options = {
   provider: "Nextway",
   model: "gpt-4o-mini",
-  webSearch: true
+  webSearch: true,
 };
 
 export const AI = async (userMessage, history) => {
@@ -18,15 +18,12 @@ export const AI = async (userMessage, history) => {
       { role: "user", content: userMessage },
     ];
 
-    const text = await provider.chatCompletion(
-      messages,
-      options,
-      (data) => {
-        data.replace(/(?<!\!)\[.*?\]|\【.*?\】/g, '').trim();
-        return data
-      }
-    );
-    return text || "";
+    let text = await provider.chatCompletion(messages, options, (data) => data);
+
+    text = text || "";
+    text = text?.replace(/(?<!\!)\[.*?\]|\【.*?\】/g, "").trim();
+
+    return text;
   } catch (error) {
     console.error("Error:", error);
     return "Maaf, ada kesalahan pada sistem AI.";
