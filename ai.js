@@ -1,31 +1,56 @@
 import GPT4js from "gpt4js";
 import fs from "fs/promises";
 
-const provider = GPT4js.createProvider("Nextway");
-
 const options = {
   provider: "Nextway",
   model: "gpt-4o-mini",
   webSearch: true,
 };
 
-export const AI = async (userMessage, history) => {
+const provider = GPT4js.createProvider(options.provider);
+
+export const Handler = async (message, history) => {
+  const system = await fs.readFile("PROMPT.MD", "utf-8");
+  const messages = [
+    { role: "system", content: system },
+    ...history,
+    { role: "user", content: message },
+  ];
+
+  let text = await provider.chatCompletion(messages, options, (data) => data);
+  let url;
+
+  text = text || "";
+
+  const mediaUrl = text.match(/!\[image\]\((.*?)\)/);
+  url = mediaUrl ? mediaUrl[1] : null;
+
+  text = text
+    ?.replace(/【.*?】\(.*?\)|\[.*?\]\s*\(.*?\)|(?<!\!)\[.*?\]|\【.*?\】/g, "")
+    .trim();
+
+  text = text?.replace(
+    /\{\s*"size"\s*:\s*".*?",\s*"prompt"\s*:\s*".*?"\s*\}/gs,
+    ""
+  );
+  text = text?.replace(/\*\*/g, "*");
+
+  if (url) {
+    text = text?.split(/\n\n/)[1];
+  }
+
+  text = text.trim();
+
+  return { url, text };
+};
+
+export const AI = async (message, history) => {
+  let ai;
   try {
-    const systemPrompt = await fs.readFile("PROMPT.MD", "utf-8");
-    const messages = [
-      { role: "system", content: systemPrompt },
-      ...history,
-      { role: "user", content: userMessage },
-    ];
-
-    let text = await provider.chatCompletion(messages, options, (data) => data);
-
-    text = text || "";
-    text = text?.replace(/(?<!\!)\[.*?\]|\【.*?\】/g, "").trim();
-
-    return text;
+    ai = await Handler(message, history);
+    return ai;
   } catch (error) {
-    console.error("Error:", error);
-    return "Maaf, ada kesalahan pada sistem AI.";
+    ai = await Handler(message, history);
+    return ai;
   }
 };
