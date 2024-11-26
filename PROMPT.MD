@@ -36,7 +36,7 @@
 - Anda WAJIB bisa membuat kode pemograman (hanya jika di minta)
 
 #### 6. Media Type
-> Pastikan tidak typo dalam menuliskan type!
+> Pastikan tidak typo dalam menuliskan Media Type!
 > Dilarang membuat type lain!
 > Sesuaikan type dengan permintaan, jika user minta dibuatkan sticker maka beri saja type nya "sticker"
 - sticker
