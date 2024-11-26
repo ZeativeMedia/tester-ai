@@ -17,10 +17,8 @@ bot.hears(/(.+)/gi, async (ctx) => {
   const body = ctx.msg.content;
   const sender = ctx.sender.decodedJid;
 
-  // Validasi sender
   if (!sender.startsWith("6285136635787")) return;
 
-  // Tambahkan handler untuk perintah khusus
   if (body.toLowerCase() === "!clear") {
     await clearUserHistory(sender);
     await ctx.reply("Riwayat percakapan telah dihapus.");
@@ -28,14 +26,28 @@ bot.hears(/(.+)/gi, async (ctx) => {
   }
 
   const ai = await AI(body, sender);
+  console.log("🚀 ~ bot.hears ~ ai:", ai)
+  const po = async () => {
+    if (ai.url) {
+      if (ai.type == "sticker") {
+        const rep = await ctx.reply({ ...{ [ai.type]: { url: ai.url } } });
+        await ctx.reply(ai.text, { quoted: rep });
+        return;
+      }
 
-  if (ai.url) {
-    await ctx.reply({
-      ...{ [ai.type]: { url: ai.url } },
-      caption: ai.text,
-    });
-  } else {
-    await ctx.reply(ai.text);
+      await ctx.reply({
+        ...{ [ai.type]: { url: ai.url } },
+        caption: ai.text,
+      });
+    } else {
+      await ctx.reply(ai.text);
+    }
+  };
+
+  try {
+    await po();
+  } catch (e) {
+    await po();
   }
 });
 

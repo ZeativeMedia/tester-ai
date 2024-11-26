@@ -86,7 +86,6 @@ class ChatHistoryManager {
 const chatHistory = new ChatHistoryManager();
 
 export const Handler = async (message, userId) => {
-  // Ambil riwayat percakapan untuk user spesifik
   const history = await chatHistory.getHistory(userId);
 
   const system = await fs.readFile("PROMPT.MD", "utf-8");
@@ -96,11 +95,10 @@ export const Handler = async (message, userId) => {
     { role: "user", content: message },
   ];
 
-  // Simpan pesan user ke riwayat
   await chatHistory.saveMessage(userId, "user", message);
 
   let text = await provider.chatCompletion(messages, options, (data) => data);
-  let url;
+  let url = "";
 
   text = text || "";
 
@@ -122,32 +120,29 @@ export const Handler = async (message, userId) => {
 
   if (url) {
     text = text?.split(/!\[image\]\((.*?)\)/)[0]?.trim();
-    text = text.slice(1);
+    text = text.split(/\!\n\n\n/)[1];
   }
 
-  text = text.split(/\$~~~~~~~~\$/g)[0];
-  text = text.trim();
+  text = text.split(/\$~~~~~~~~\$/g)[0]?.trim();
 
-  if (!text.length) throw Error("re-try");
+  if (!text?.length) throw new Error("re-try");
 
-  // Simpan respons AI ke riwayat
   await chatHistory.saveMessage(userId, "assistant", text);
 
   return { url, text, type };
 };
 
 export const AI = async (message, userId) => {
-  let ai;
-  try {
-    ai = await Handler(message, userId);
-    return ai;
-  } catch (error) {
-    ai = await Handler(message, userId);
-    return ai;
+  while (true) {
+    try {
+      return await Handler(message, userId);
+    } catch (error) {
+      console.error("Retrying due to error:", error.message);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 };
 
-// Tambahan fungsi untuk mengelola riwayat
 export const clearUserHistory = async (userId) => {
   await chatHistory.clearHistory(userId);
 };
