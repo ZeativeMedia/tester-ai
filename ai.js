@@ -21,7 +21,10 @@ export const AI = async (userMessage, history) => {
     const text = await provider.chatCompletion(
       messages,
       options,
-      (data) => data
+      (data) => {
+        data.replace(/(?<!\!)\[.*?\]|\【.*?\】/g, '').trim();
+        return data
+      }
     );
     return text || "";
   } catch (error) {
