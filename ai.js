@@ -1,5 +1,6 @@
-import GPT4js from "gpt4js";
+import path from "path";
 import fs from "fs/promises";
+import GPT4js from "gpt4js";
 
 const options = {
   provider: "Nextway",
@@ -9,13 +10,94 @@ const options = {
 
 const provider = GPT4js.createProvider(options.provider);
 
-export const Handler = async (message, history) => {
+class ChatHistoryManager {
+  constructor(maxHistoryLength = 10) {
+    this.historyFile = path.join(process.cwd(), "chat_history.json");
+    this.maxHistoryLength = maxHistoryLength;
+  }
+
+  async initializeHistoryFile() {
+    try {
+      await fs.access(this.historyFile);
+    } catch {
+      await fs.writeFile(this.historyFile, JSON.stringify({}), "utf-8");
+    }
+  }
+
+  async getHistory(userId) {
+    await this.initializeHistoryFile();
+
+    try {
+      const data = await fs.readFile(this.historyFile, "utf-8");
+      const histories = JSON.parse(data);
+
+      return histories[userId] || [];
+    } catch (error) {
+      console.error("Error reading history:", error);
+      return [];
+    }
+  }
+
+  async saveMessage(userId, role, content) {
+    await this.initializeHistoryFile();
+
+    try {
+      const data = await fs.readFile(this.historyFile, "utf-8");
+      const histories = JSON.parse(data);
+
+      // Initialize user history if not exists
+      if (!histories[userId]) {
+        histories[userId] = [];
+      }
+
+      // Add new message
+      histories[userId].push({ role, content });
+
+      // Trim history to max length
+      if (histories[userId].length > this.maxHistoryLength) {
+        histories[userId] = histories[userId].slice(-this.maxHistoryLength);
+      }
+
+      // Save updated histories
+      await fs.writeFile(this.historyFile, JSON.stringify(histories), "utf-8");
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  }
+
+  async clearHistory(userId) {
+    await this.initializeHistoryFile();
+
+    try {
+      const data = await fs.readFile(this.historyFile, "utf-8");
+      const histories = JSON.parse(data);
+
+      // Remove user's history
+      delete histories[userId];
+
+      // Save updated histories
+      await fs.writeFile(this.historyFile, JSON.stringify(histories), "utf-8");
+    } catch (error) {
+      console.error("Error clearing history:", error);
+    }
+  }
+}
+
+const chatHistory = new ChatHistoryManager();
+
+export const Handler = async (message, userId) => {
+  // Ambil riwayat percakapan untuk user spesifik
+  const history = await chatHistory.getHistory(userId);
+
   const system = await fs.readFile("PROMPT.MD", "utf-8");
   const messages = [
     { role: "system", content: system },
     ...history,
     { role: "user", content: message },
   ];
+
+  // Simpan pesan user ke riwayat
+  await chatHistory.saveMessage(userId, "user", message);
 
   let text = await provider.chatCompletion(messages, options, (data) => data);
   let url;
@@ -30,27 +112,42 @@ export const Handler = async (message, history) => {
     .trim();
 
   text = text?.replace(
-    /\{\s*"size"\s*:\s*".*?",\s*"prompt"\s*:\s*".*?"\s*\}/gs,
+    /\{\s*"(size|prompt)"\s*:\s*".*?",\s*"(prompt|size)"\s*:\s*".*?"\s*\}/gs,
     ""
   );
+
   text = text?.replace(/\*\*/g, "*");
 
+  let type = text.split(/\$~~~~~~~~\$/)[1]?.trim() || "text";
+
   if (url) {
-    text = text?.split(/\n\n/)[1];
+    text = text?.split(/!\[image\]\((.*?)\)/)[0]?.trim();
+    text = text.slice(1);
   }
 
+  text = text.split(/\$~~~~~~~~\$/g)[0];
   text = text.trim();
 
-  return { url, text };
+  if (!text.length) throw Error("re-try");
+
+  // Simpan respons AI ke riwayat
+  await chatHistory.saveMessage(userId, "assistant", text);
+
+  return { url, text, type };
 };
 
-export const AI = async (message, history) => {
+export const AI = async (message, userId) => {
   let ai;
   try {
-    ai = await Handler(message, history);
+    ai = await Handler(message, userId);
     return ai;
   } catch (error) {
-    ai = await Handler(message, history);
+    ai = await Handler(message, userId);
     return ai;
   }
+};
+
+// Tambahan fungsi untuk mengelola riwayat
+export const clearUserHistory = async (userId) => {
+  await chatHistory.clearHistory(userId);
 };

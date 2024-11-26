@@ -1,5 +1,5 @@
 import { Client } from "@mengkodingan/ckptw";
-import { AI } from "./ai.js";
+import { AI, clearUserHistory } from "./ai.js";
 
 const bot = new Client({
   prefix: "!",
@@ -17,13 +17,21 @@ bot.hears(/(.+)/gi, async (ctx) => {
   const body = ctx.msg.content;
   const sender = ctx.sender.decodedJid;
 
+  // Validasi sender
   if (!sender.startsWith("6285136635787")) return;
 
-  const ai = await AI(body, []);
+  // Tambahkan handler untuk perintah khusus
+  if (body.toLowerCase() === "!clear") {
+    await clearUserHistory(sender);
+    await ctx.reply("Riwayat percakapan telah dihapus.");
+    return;
+  }
+
+  const ai = await AI(body, sender);
 
   if (ai.url) {
     await ctx.reply({
-      image: { url: ai.url },
+      ...{ [ai.type]: { url: ai.url } },
       caption: ai.text,
     });
   } else {
