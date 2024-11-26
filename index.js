@@ -63,7 +63,7 @@ bot.hears(/(.+)/gi, async (ctx) => {
 
     const media = extractUrlAndContent(aiResponse);
 
-    if (media) {
+    if (media.url) {
       await ctx.reply({
         image: { url: media.url },
         caption: media.content,

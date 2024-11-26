@@ -5,7 +5,8 @@ const provider = GPT4js.createProvider("Nextway");
 
 const options = {
   provider: "Nextway",
-  model: "gpt-4o-free",
+  model: "gpt-4o-mini",
+  webSearch: true
 };
 
 export const AI = async (userMessage, history) => {
@@ -17,8 +18,12 @@ export const AI = async (userMessage, history) => {
       { role: "user", content: userMessage },
     ];
 
-    const text = await provider.chatCompletion(messages, options, (data) => data);
-    return text;
+    const text = await provider.chatCompletion(
+      messages,
+      options,
+      (data) => data
+    );
+    return text || "";
   } catch (error) {
     console.error("Error:", error);
     return "Maaf, ada kesalahan pada sistem AI.";
