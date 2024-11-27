@@ -8,11 +8,16 @@ bot.hears(/(.+)/gi, async (ctx) => {
   if (ctx.msg.key.fromMe) return;
   if (!ctx.msg.content) return;
 
-  const body = ctx.msg.content;
+  const tag = ctx.msg.content.startsWith("@" + CLIENT_CONFIG.phoneNumber);
+
+  if (ctx.isGroup() && !tag) return;
+
+  const body = ctx.msg.content.split("@" + CLIENT_CONFIG.phoneNumber)[1]?.trim() || ctx.msg.content;
+  console.log("🚀 ~ bot.hears ~ body:", body)
   const sender = ctx.sender.decodedJid;
   const room = ctx.msg.key.remoteJid;
 
-  if (!sender.startsWith(SYSTEM_CONFIG.owner)) return;
+  if (!SYSTEM_CONFIG.owner.includes(sender.split("@")[0])) return;
 
   const ai = await AI(body, room + "//" + sender);
 
