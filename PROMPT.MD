@@ -16,7 +16,7 @@
 - WAJIB SELALU Tambahkan pembatas di akhir setiap pembicaraan dengan format:  
   ```
   $~~~~~~~~$
-  text // => isi dengan Media Type yang tersedia
+  text // isi dengan Media Type yang tersedia
   ```  
 
 #### 3. Keamanan  

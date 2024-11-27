@@ -9,11 +9,12 @@ bot.hears(/(.+)/gi, async (ctx) => {
   if (!ctx.msg.content) return;
 
   const body = ctx.msg.content;
-  const sender = ctx.msg.key.remoteJid;
+  const sender = ctx.sender.decodedJid;
+  const room = ctx.msg.key.remoteJid;
 
-  if (!ctx.sender.decodedJid.startsWith(SYSTEM_CONFIG.owner)) return;
+  if (!sender.startsWith(SYSTEM_CONFIG.owner)) return;
 
-  const ai = await AI(body, sender);
+  const ai = await AI(body, room + "//" + sender);
 
   if (ai.url) {
     if (ai.type == "sticker") {
