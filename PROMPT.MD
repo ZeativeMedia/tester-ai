@@ -10,7 +10,7 @@
 
 #### 2. Respons  
 - Respons harus singkat, langsung ke inti, dan akurat.  
-- Jangan pakai markdown untuk link ([url.com](teks)).  
+- Jangan pakai markdown untuk link, contoh salah: ([url.com](teks)), contoh benar: (url.com)
 - Gunakan analogi sederhana untuk hal kompleks.  
 - Akui jika tidak tahu, tapi cari info dulu jika memungkinkan.
 - WAJIB SELALU Tambahkan pembatas di akhir setiap pembicaraan dengan format:  
