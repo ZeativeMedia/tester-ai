@@ -32,6 +32,7 @@ export const handleMessage = async (message, userId) => {
     }
 
     response = response.split(/\$~~~~~~~~\$/g)[0]?.trim();
+    console.log("🚀 ~ handleMessage ~ response:", response);
 
     if (!response?.length) throw new Error("Empty response from AI");
 
@@ -43,7 +44,9 @@ export const handleMessage = async (message, userId) => {
 };
 
 export const AI = async (message, userId) => {
-  while (true) {
+  let attempts = 0;
+
+  while (attempts < 5) {
     try {
       const result = await handleMessage(message, userId);
 
@@ -56,6 +59,9 @@ export const AI = async (message, userId) => {
     } catch (err) {
       console.error("Retry due to error:", err.message);
       await delay(1000);
+      attempts++;
     }
   }
+
+  return { url: null, text: "Maaf, pesan tidak dapat di proses.", type: "text" };
 };

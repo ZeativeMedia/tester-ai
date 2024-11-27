@@ -16,5 +16,6 @@ export const SYSTEM_CONFIG = {
   chats: {
     provider: "Nextway",
     model: getAIModel(),
+    webSearch: false,
   },
 };
