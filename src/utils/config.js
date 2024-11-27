@@ -12,9 +12,9 @@ export const getAIModel = () => LIST_AI_MODEL[Math.floor(Math.random() * LIST_AI
 
 export const SYSTEM_CONFIG = {
   owner: ["6285852584161", "6285136635787"],
+  openai: 'sk-OsMMq65tXdfOIlTUYtocSL7NCsmA7CerN77OkEv29dODg1EA',
   chats: {
     provider: "Nextway",
     model: getAIModel(),
-    webSearch: true,
   },
 };

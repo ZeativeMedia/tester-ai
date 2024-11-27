@@ -20,6 +20,8 @@ bot.hears(/(.+)/gi, async (ctx) => {
   if (!SYSTEM_CONFIG.owner.includes(sender.split("@")[0])) return;
 
   const ai = await AI(body, room + "//" + sender);
+  console.log("🚀 ~ bot.hears ~ ai:", ai.type)
+  console.log("🚀 ~ bot.hears ~ ai:", ai.text)
 
   if (ai.url) {
     if (ai.type == "sticker") {
