@@ -16,6 +16,7 @@ export const handleMessage = async (message, userId) => {
     let original = "";
     let response = (await ai.chatCompletion(messages, opts)) || "";
     original = response;
+    console.log("🚀 ~ handleMessage ~ original:", original)
 
     const mediaMatch = response?.match(/!\[image\]\((.*?)\)/);
     const url = mediaMatch ? mediaMatch[1] : null;
@@ -32,7 +33,6 @@ export const handleMessage = async (message, userId) => {
     }
 
     response = response.split(/\$~~~~~~~~\$/g)[0]?.trim();
-    console.log("🚀 ~ handleMessage ~ response:", response);
 
     if (!response?.length) throw new Error("Empty response from AI");
 
@@ -49,16 +49,9 @@ export const AI = async (message, userId) => {
   while (attempts < 5) {
     try {
       const result = await handleMessage(message, userId);
-
-      if (result.text) {
-        await saveHistory(userId, "user", message);
-        await saveHistory(userId, "assistant", result.original);
-      }
-
       return result;
     } catch (err) {
       console.error("Retry due to error:", err.message);
-      await delay(1000);
       attempts++;
     }
   }
