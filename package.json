@@ -7,6 +7,9 @@
 		"@huggingface/inference": "^2.8.1",
 		"@mengkodingan/ckptw": "^4.3.8",
 		"axios": "^1.7.8",
+		"g4f": "^1.4.6",
+		"gifted-gpt": "^1.1.0",
+		"gpt4free-js": "^1.0.0",
 		"gpt4js": "^1.7.8",
 		"https": "^1.0.0"
 	}

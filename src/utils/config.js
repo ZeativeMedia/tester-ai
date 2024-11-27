@@ -7,7 +7,7 @@ export const CLIENT_CONFIG = {
   WAVersion: [2, 3000, 1017531287],
 };
 
-export const LIST_AI_MODEL = ["gpt-3.5-turbo"];
+export const LIST_AI_MODEL = ["gpt-4o-mini"];
 export const getAIModel = () => LIST_AI_MODEL[Math.floor(Math.random() * LIST_AI_MODEL.length)];
 
 export const SYSTEM_CONFIG = {
