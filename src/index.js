@@ -9,9 +9,9 @@ bot.hears(/(.+)/gi, async (ctx) => {
   if (!ctx.msg.content) return;
 
   const body = ctx.msg.content;
-  const sender = ctx.sender.decodedJid;
+  const sender = ctx.msg.key.remoteJid;
 
-  if (!sender.startsWith(SYSTEM_CONFIG.owner)) return;
+  if (!ctx.sender.decodedJid.startsWith(SYSTEM_CONFIG.owner)) return;
 
   const ai = await AI(body, sender);
 
