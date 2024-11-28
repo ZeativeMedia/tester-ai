@@ -1,8 +1,7 @@
 import fs from "fs/promises";
 import GPT4js from "gpt4js";
 import { SYSTEM_CONFIG } from "../utils/config.js";
-import { delay } from "../utils/tools.js";
-import { getHistory, saveHistory } from "./controls.js";
+import { getHistory } from "./controls.js";
 
 const opts = SYSTEM_CONFIG.chats;
 const ai = GPT4js.createProvider(opts.provider);
@@ -10,16 +9,23 @@ const ai = GPT4js.createProvider(opts.provider);
 export const handleMessage = async (message, userId) => {
   const history = await getHistory(userId);
   const systemPrompt = await fs.readFile("PROMPT.MD", "utf-8");
-  const messages = [{ role: "system", content: systemPrompt }, ...history, { role: "user", content: message }];
+  const messages = [
+    { role: "system", content: systemPrompt }, 
+    ...history, 
+    { role: "user", content: message }
+  ];
 
   try {
     let original = "";
     let response = (await ai.chatCompletion(messages, opts)) || "";
     original = response;
-    console.log("🚀 ~ handleMessage ~ original:", original)
+
+    console.log("🚀 ~ handleMessage ~ original:\n", original)
 
     const mediaMatch = response?.match(/!\[image\]\((.*?)\)/);
+    
     const url = mediaMatch ? mediaMatch[1] : null;
+
     response = response?.replace(/【.*?】\(.*?\)|\[.*?\]\s*\(.*?\)|(?<!\!)\[.*?\]|\【.*?\】/g, "").trim();
 
     response = response?.replace(/\{\s*"(size|prompt)"\s*:\s*".*?",\s*"(prompt|size)"\s*:\s*".*?"\s*\}/gs, "");
